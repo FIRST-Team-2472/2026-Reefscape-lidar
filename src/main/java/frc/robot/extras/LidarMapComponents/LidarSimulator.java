@@ -15,6 +15,20 @@ public class LidarSimulator {
         }
         return PerfectPointCloud;
     }
+    public static MapPoint[] getPerfectPointCloud(MapPoint robotPose, double angle){
+        MapPoint[] PerfectPointCloud = new MapPoint[167];
+        double[] distances = new double[167];
+        for(int i = 0; i < 167; i++){//multiply by .6 because we have one measurement per .6 degrees
+            //minus 50 to start at one side of the cone
+            distances[i] = getSmallestRayDistance(LidarMap.getMap()[0],LidarMap.getMap()[1], robotPose, angle + i*.6 -50);
+            if(distances[i] <0.025|| distances[i] > 0.3){
+                distances[i] = 0;// simulate no return for too close or too far objects
+            }
+            double angleRad = Math.toRadians(angle + i*.6 -50);
+            PerfectPointCloud[i] = new MapPoint(robotPose.x + distances[i]*Math.cos(angleRad), robotPose.y + distances[i]*Math.sin(angleRad));
+        }
+        return PerfectPointCloud;
+    }
     public static double[] getMessySimData(MapPoint robotPose, double angle){
         double[] MessyPointCloud = new double[167];
         for(int i = 0; i < 167; i++){//multiply by .6 because we have one measurement per .6 degrees

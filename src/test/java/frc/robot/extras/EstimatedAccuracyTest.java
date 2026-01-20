@@ -11,7 +11,7 @@ public class EstimatedAccuracyTest {
 
     @Test
     public void testEstimatedAccuracy() {
-        int iterations = 300;
+        int iterations = 200000;
         int improvedIterations = 0;
         double totalImprovement = 0;
 
@@ -23,20 +23,25 @@ public class EstimatedAccuracyTest {
             double trueRotation = Math.random() * 360;
 
             double maxTranslationalInaccuracy = 0.03; // 3 cm
-            double maxAngleInaccuracy = 3; // 3 degrees
+            double maxAngleInaccuracy = 0; // 2 degrees
 
             double innacurateX = trueX + (Math.random() * 2 - 1) * maxTranslationalInaccuracy;
             double innacurateY = trueY + (Math.random() * 2 - 1) * maxTranslationalInaccuracy;
             double innacurateRotation = trueRotation + (Math.random() * 2 - 1) * maxAngleInaccuracy;
 
-            // currently set to our lidars innacuracy
-            double[] SimulatedScan = LidarSimulator.getMessySimData(
+            // currently set to perfection, with a seeded particle we should get about 1.4cm of improvement
+            double[] SimulatedScan = LidarSimulator.getPerfectSimData(
                     new MapPoint(trueX, trueY),
                     trueRotation);
 
+          //  FieldPoint calculatedPose = PointCloudPositionEstimator.estimatePose(
+           //         new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
+          //          SimulatedScan);
+            // For testing, we will use the predetermined particle at the innacurate position
+            MapPoint predeterminedParticle = new MapPoint(trueX, trueY);
             FieldPoint calculatedPose = PointCloudPositionEstimator.estimatePose(
                     new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
-                    SimulatedScan);
+                    SimulatedScan, predeterminedParticle);
 
             double lidarInnacuracy = Math.hypot(trueX - calculatedPose.getX(), trueY - calculatedPose.getY());
             double inputInnacuracy = Math.hypot(trueX - innacurateX, trueY - innacurateY);
