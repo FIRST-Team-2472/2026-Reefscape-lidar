@@ -249,4 +249,8 @@ public final class Constants {
         public static Distance kLEDSpacing = Meters.of(1.0 / 6); // 6 per meter 
         public static LinearVelocity kRainbowScrollSpeed = MetersPerSecond.of(3);
     }   
+    public final class LidarConstants{
+        public static double kLidarHorizontalOffsetFromCenterMeters = 0.1; // 10 cm forward from center
+        public static double kLidarAngleOffsetFromForwardDegrees = 45; // each lidar looks inwards at 45 degrees
+    }
 }
