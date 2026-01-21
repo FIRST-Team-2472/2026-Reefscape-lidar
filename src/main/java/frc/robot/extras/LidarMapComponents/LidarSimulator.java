@@ -3,12 +3,27 @@ package frc.robot.extras.LidarMapComponents;
 import frc.robot.extras.LidarMap;
 
 public class LidarSimulator {
+    public static double[][] getDualLidarSimData(MapPoint robotPose, double angle, boolean perfect, double horizontalOffset, double angleOffset){
+        double[][] dualLidarData = new double[2][167];
+        MapPoint leftLidarPose = new MapPoint(robotPose.x - horizontalOffset * Math.sin(Math.toRadians(angle)),
+                                                robotPose.y + horizontalOffset * Math.cos(Math.toRadians(angle)));
+        MapPoint rightLidarPose = new MapPoint(robotPose.x + horizontalOffset * Math.sin(Math.toRadians(angle)),
+                                                robotPose.y - horizontalOffset * Math.cos(Math.toRadians(angle)));
+        if(perfect){
+            dualLidarData[0] = getPerfectSimData(leftLidarPose, angle + angleOffset);
+            dualLidarData[1] = getPerfectSimData(rightLidarPose, angle - angleOffset);
+        }else{
+            dualLidarData[0] = getMessySimData(leftLidarPose, angle + angleOffset);
+            dualLidarData[1] = getMessySimData(rightLidarPose, angle - angleOffset);
+        }
+        return dualLidarData;
+    }
 
     public static double[] getPerfectSimData(MapPoint robotPose, double angle){
         double[] PerfectPointCloud = new double[167];
         for(int i = 0; i < 167; i++){//multiply by .6 because we have one measurement per .6 degrees
             //minus 50 to start at one side of the cone
-            PerfectPointCloud[i] = getSmallestRayDistance(LidarMap.getMap()[0],LidarMap.getMap()[1], robotPose, angle + i*.6 -50);
+            PerfectPointCloud[i] = getSmallestRayDistance(new Polygon[]{LidarMap.getMap()[0],LidarMap.getMap()[1]}, robotPose, angle + i*.6 -50);
             if(PerfectPointCloud[i] <0.025|| PerfectPointCloud[i] > 0.3){
                 PerfectPointCloud[i] = 0;// simulate no return for too close or too far objects
             }
@@ -20,7 +35,7 @@ public class LidarSimulator {
         double[] distances = new double[167];
         for(int i = 0; i < 167; i++){//multiply by .6 because we have one measurement per .6 degrees
             //minus 50 to start at one side of the cone
-            distances[i] = getSmallestRayDistance(LidarMap.getMap()[0],LidarMap.getMap()[1], robotPose, angle + i*.6 -50);
+            distances[i] = getSmallestRayDistance(new Polygon[]{LidarMap.getMap()[0],LidarMap.getMap()[1]}, robotPose, angle + i*.6 -50);
             if(distances[i] <0.025|| distances[i] > 0.3){
                 distances[i] = 0;// simulate no return for too close or too far objects
             }
@@ -34,7 +49,7 @@ public class LidarSimulator {
         for(int i = 0; i < 167; i++){//multiply by .6 because we have one measurement per .6 degrees
             //minus 50 to start at one side of the cone
             // random * 6 because angular innacuracy is +-3 degrees
-            MessyPointCloud[i] = getSmallestRayDistance(LidarMap.getMap()[0],LidarMap.getMap()[1], robotPose, angle + i*.6 -50 + Math.random()*6 -3);
+            MessyPointCloud[i] = getSmallestRayDistance(new Polygon[]{LidarMap.getMap()[0],LidarMap.getMap()[1]}, robotPose, angle + i*.6 -50 + Math.random()*6 -3);
             if(MessyPointCloud[i] <0.025|| MessyPointCloud[i] > 0.3){
                 MessyPointCloud[i] = 0;// simulate no return for too close or too far objects
             }else if(MessyPointCloud[i] <0.1){
@@ -51,7 +66,7 @@ public class LidarSimulator {
     public static double[] getLessMessySimData(MapPoint robotPose, double angle){
         double[] lessMessyPointCloud = new double[167];
         for(int i = 0; i < 167; i++){
-            lessMessyPointCloud[i] = getSmallestRayDistance(LidarMap.getMap()[0],LidarMap.getMap()[1], robotPose, angle + i*.6 -50 + Math.random()*3 -1.5);
+            lessMessyPointCloud[i] = getSmallestRayDistance(new Polygon[]{LidarMap.getMap()[0],LidarMap.getMap()[1]}, robotPose, angle + i*.6 -50 + Math.random()*3 -1.5);
             if(lessMessyPointCloud[i] <0.025|| lessMessyPointCloud[i] > 0.3){
                 lessMessyPointCloud[i] = 0;// simulate no return for too close or too far objects
             }else if(lessMessyPointCloud[i] <0.1){
@@ -77,7 +92,7 @@ public class LidarSimulator {
      * @param angleDeg The angle to cast towards (in degrees).
      * @return The shortest distance, or Double.POSITIVE_INFINITY if nothing is hit.
      */
-    public static double getSmallestRayDistance(Polygon p1, Polygon p2, MapPoint origin, double angleDeg) {
+    public static double getSmallestRayDistance(Polygon[] polygonArray, MapPoint origin, double angleDeg) {
         double minDistance = Double.POSITIVE_INFINITY;
 
         // Convert angle to direction vector
@@ -85,10 +100,7 @@ public class LidarSimulator {
         double r_dx = Math.cos(angleRad);
         double r_dy = Math.sin(angleRad);
 
-        // Put both polygons in a list to iterate cleanly
-        Polygon[] polygonsToCheck = { p1, p2 };
-
-        for (Polygon poly : polygonsToCheck) {
+        for (Polygon poly : polygonArray) {
             // Access the array of segments using your specific .get() method
             LineSegment[] segments = poly.get();
 
