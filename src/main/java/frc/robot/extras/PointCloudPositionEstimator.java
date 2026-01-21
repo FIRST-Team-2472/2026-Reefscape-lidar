@@ -81,13 +81,13 @@ public class PointCloudPositionEstimator {
         MapPoint[] roughParticles = generateParticles(robotPose, 45, 0.05, 0.006);
         double[] particleScores = scoreParticles(roughParticles, measuredPointCloud,
                 roughPose.getRotation().getDegrees());// lower is better
-        MapPoint bestParticle = getBestParticle(roughParticles, particleScores);
+        MapPoint bestParticle = averageAmongBestParticles(roughParticles, particleScores);
 
         // we have the 1st estimate now we need to refine this
         MapPoint[] moderateParticles = generateParticles(bestParticle, 20, 0.02, 0.001);
         double[] moderateParticleScores = scoreParticles(moderateParticles, measuredPointCloud,
                 roughPose.getRotation().getDegrees());
-        MapPoint bestModerateParticle = getBestParticle(moderateParticles, moderateParticleScores);
+        MapPoint bestModerateParticle = averageAmongBestParticles(moderateParticles, moderateParticleScores);
         return new FieldPoint(bestModerateParticle.x, bestModerateParticle.y);
     }
     public static FieldPoint estimatePoseWithAngleSearch(FieldPose2d roughPose, double[][] measuredPointCloud) {
@@ -174,14 +174,48 @@ public class PointCloudPositionEstimator {
         SmartDashboard.putNumber("BestScore", bestScore);
         return particles[bestIndex];
     }
+    public static MapPoint averageAmongBestParticles(MapPoint[] particles, double[] particleScores) {
+        Integer[] indices = new Integer[particleScores.length];
+        for (int i = 0; i < particleScores.length; i++) {
+            indices[i] = i;
+        }
+
+        java.util.Arrays.sort(indices, (a, b) -> Double.compare(particleScores[a], particleScores[b]));
+
+        int count = Math.min(4, particles.length);
+        double weightedSumX = 0;
+        double weightedSumY = 0;
+        double totalWeight = 0;
+
+        for (int i = 0; i < count; i++) {
+            double score = particleScores[indices[i]];
+            // Use inverse of score as weight. Small epsilon prevents division by zero
+            // for perfect matches.
+            double weight = 1.0 / (score + 1e-5); 
+
+            weightedSumX += particles[indices[i]].x * weight;
+            weightedSumY += particles[indices[i]].y * weight;
+            totalWeight += weight;
+        }
+        
+        if (count > 0) {
+            SmartDashboard.putNumber("BestScore", particleScores[indices[0]]);
+        } else {
+             // Fallback if no particles provided
+            return new MapPoint(0, 0);
+        }
+
+        return new MapPoint(weightedSumX / totalWeight, weightedSumY / totalWeight);
+    }
 
     public static double[] scoreParticles(MapPoint[] roughParticles, double[] measuredPointCloud,
             double robotAngleDegrees) {
-        double[] particleScores = new double[roughParticles.length];// lower is better
+        // lower is better
         double maxLidarRange = 0.3; // 30cm limit from simulator
         double minLidarRange = 0.025; // 25mm limit
 
-        for (int i = 0; i < roughParticles.length; i++) {// we just assume rotation is perfect for now
+        return java.util.stream.IntStream.range(0, roughParticles.length).parallel().mapToDouble(i -> {
+            // we just assume rotation is perfect for now
             double[] expectedMeasurementAtParticle = LidarSimulator.getPerfectSimData(roughParticles[i],
                     robotAngleDegrees);
             double score = 0;
@@ -210,19 +244,19 @@ public class PointCloudPositionEstimator {
                     score += error * error;
                 }
             }
-            particleScores[i] = score;
-        }
-        return particleScores;
+            return score;
+        }).toArray();
     }
     public static double[] scoreParticles(MapPoint[] roughParticles, double[][] measuredPointClouds,
             double robotAngleDegrees) {
-        double[] particleScores = new double[roughParticles.length];// lower is better
+        // lower is better
         double maxLidarRange = 0.3; // 30cm limit from simulator
         double minLidarRange = 0.025; // 25mm limit
 
-        for (int i = 0; i < roughParticles.length; i++) {// we just assume rotation is perfect for now
+        return java.util.stream.IntStream.range(0, roughParticles.length).parallel().mapToDouble(i -> {
+            // we just assume rotation is perfect for now
             double[][] expectedMeasurementsAtParticle = LidarSimulator.getDualLidarSimData(roughParticles[i],
-                    robotAngleDegrees, true, LidarConstants.kLidarHorizontalOffsetFromCenterMeters, LidarConstants.kLidarAngleOffsetFromForwardDegrees);
+                    robotAngleDegrees, 0, LidarConstants.kLidarHorizontalOffsetFromCenterMeters, LidarConstants.kLidarAngleOffsetFromForwardDegrees);
             double score = 0;
             for (int j = 0; j < measuredPointClouds.length; j++) {
                 for(int l = 0; l < measuredPointClouds[j].length; l++){
@@ -254,27 +288,26 @@ public class PointCloudPositionEstimator {
                 }
                 
             }
-            particleScores[i] = score;
-        }
-        return particleScores;
+            return score;
+        }).toArray();
     }
     public static double[] scoreParticlesWithTwist(MapPoint[] roughParticles, double[][] measuredPointClouds,
             double robotAngleDegrees) {
-        double[] particleScores = new double[roughParticles.length];// lower is better
+        // lower is better
         double maxLidarRange = 0.3; // 30cm limit from simulator
         double minLidarRange = 0.025; // 25mm limit
         
         // Define angles to test relative to robotAngleDegrees
         double[] angleOffsets = {-.5, 0.0, .5}; 
 
-        for (int i = 0; i < roughParticles.length; i++) {
+        return java.util.stream.IntStream.range(0, roughParticles.length).parallel().mapToDouble(i -> {
             double bestParticleScore = Double.MAX_VALUE;
 
             for (double angleOffset : angleOffsets) {
                 double testingAngle = robotAngleDegrees + angleOffset;
                 
                 double[][] expectedMeasurementsAtParticle = LidarSimulator.getDualLidarSimData(roughParticles[i],   
-                        testingAngle, true, LidarConstants.kLidarHorizontalOffsetFromCenterMeters, LidarConstants.kLidarAngleOffsetFromForwardDegrees);
+                        testingAngle, 0, LidarConstants.kLidarHorizontalOffsetFromCenterMeters, LidarConstants.kLidarAngleOffsetFromForwardDegrees);
                 double score = 0;
                 for (int j = 0; j < measuredPointClouds.length; j++) {
                     for(int l = 0; l < measuredPointClouds[j].length; l++){
@@ -303,9 +336,8 @@ public class PointCloudPositionEstimator {
                     bestParticleScore = score;
                 }
             }
-            particleScores[i] = bestParticleScore;
-        }
-        return particleScores;
+            return bestParticleScore;
+        }).toArray();
     }
 
     public static MapPoint[] generateParticles(MapPoint estimatedPose, int count, double maxSpread, double minSpread) {

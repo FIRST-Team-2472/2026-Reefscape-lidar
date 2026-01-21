@@ -16,7 +16,7 @@ public class EstimatedClimbingAccTest {
         int iterations = 20000;// expecting much higher chance of seeing something with dual lidar
         int climbingImprovedIterations = 0;
         double totalClimbingImprovement = 0;
-        double totalClimbingImprovementWithAngleGuess = 0;
+        double totalStartingInnacuracy = 0;
 
         System.out.println("Starting EstimatedClimbingAccTest...");
 
@@ -38,7 +38,7 @@ public class EstimatedClimbingAccTest {
             double[][] SimulatedDualScan = LidarSimulator.getDualLidarSimData(
                     new MapPoint(trueX, trueY),
                     trueRotation,
-                    false,
+                    1, // messy with accurate angle
                     LidarConstants.kLidarHorizontalOffsetFromCenterMeters,
                     LidarConstants.kLidarAngleOffsetFromForwardDegrees);
 
@@ -46,34 +46,27 @@ public class EstimatedClimbingAccTest {
             FieldPoint calculatedPose = PointCloudPositionEstimator.estimatePose(
                     new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
                     SimulatedDualScan);
-        //guessing angle seems to be inconsequential for the most part
-            FieldPoint calculatedPoseWithAngleGuess = PointCloudPositionEstimator.estimatePoseWithAngleSearch(new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
-                    SimulatedDualScan);
 
             double lidarInnacuracy = Math.hypot(trueX - calculatedPose.getX(), trueY - calculatedPose.getY());
-            double lidarInnacuracyWithAngleGuess = Math.hypot(trueX - calculatedPoseWithAngleGuess.getX(), trueY - calculatedPoseWithAngleGuess.getY());
             double inputInnacuracy = Math.hypot(trueX - innacurateX, trueY - innacurateY);
 
             if (lidarInnacuracy != inputInnacuracy) {
-                System.out.println("Climbing accuracy Imporvement = " + (inputInnacuracy - lidarInnacuracy) +
-                        " lidar innac = " + lidarInnacuracy +
-                        " previous innac = " + inputInnacuracy);
                 totalClimbingImprovement += (inputInnacuracy - lidarInnacuracy);
-                totalClimbingImprovementWithAngleGuess += (inputInnacuracy - lidarInnacuracyWithAngleGuess);
                 climbingImprovedIterations++;
+                totalStartingInnacuracy += inputInnacuracy;
             }
 
         }
 
         double averageClimbingImprovementWhileSeeing = totalClimbingImprovement / climbingImprovedIterations;
-        double averageClimbingImprovementWithAngleGuessWhileSeeing = totalClimbingImprovementWithAngleGuess / climbingImprovedIterations;
         System.out.println(
                 "EstimatedClimbingAccTest complete. Average Climbing Improvement when seeing something: "
                         + averageClimbingImprovementWhileSeeing + " meters over " + climbingImprovedIterations
                         + " iterations out of " + iterations + " total.");
+
         System.out.println(
-                "EstimatedClimbingAccTest complete. Average Climbing Improvement with Angle Guess when seeing something: "
-                        + averageClimbingImprovementWithAngleGuessWhileSeeing + " meters over " + climbingImprovedIterations
-                        + " iterations out of " + iterations + " total.");
+                "Average Starting Innacuracy when seeing something: "
+                        + (totalStartingInnacuracy / climbingImprovedIterations) + " meters over "
+                        + climbingImprovedIterations + " iterations out of " + iterations + " total.");
     }
 }
