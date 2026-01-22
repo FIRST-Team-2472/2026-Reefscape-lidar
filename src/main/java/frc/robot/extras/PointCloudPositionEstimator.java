@@ -74,7 +74,7 @@ public class PointCloudPositionEstimator {
         return new FieldPoint(finalX, finalY);
     }
     public static FieldPoint estimatePose(FieldPose2d roughPose, double[][] measuredPointCloud) {
-        if (areAllZeros(measuredPointCloud)) {
+        if (tooLittleUsefulData(measuredPointCloud)) {
             return new FieldPoint(roughPose.getX(), roughPose.getY());
         }
         MapPoint robotPose = new MapPoint(roughPose.getX(), roughPose.getY());
@@ -85,10 +85,17 @@ public class PointCloudPositionEstimator {
 
         // we have the 1st estimate now we need to refine this
         MapPoint[] moderateParticles = generateParticles(bestParticle, 20, 0.02, 0.001);
-        double[] moderateParticleScores = scoreParticles(moderateParticles, measuredPointCloud,
+        double[] moderateParticleScores = scoreParticlesWithTwist(moderateParticles, measuredPointCloud,
                 roughPose.getRotation().getDegrees());
         MapPoint bestModerateParticle = averageAmongBestParticles(moderateParticles, moderateParticleScores);
-        return new FieldPoint(bestModerateParticle.x, bestModerateParticle.y);
+
+        // 3rd pass for fine tuning
+        MapPoint[] fineParticles = generateParticles(bestModerateParticle, 20, 0.006, 0.001);
+        double[] fineParticleScores = scoreParticlesWithTwist(fineParticles, measuredPointCloud,
+                roughPose.getRotation().getDegrees());
+        MapPoint bestFineParticle = averageAmongBestParticles(fineParticles, fineParticleScores);
+
+        return new FieldPoint(bestFineParticle.x, bestFineParticle.y);
     }
     public static FieldPoint estimatePoseWithAngleSearch(FieldPose2d roughPose, double[][] measuredPointCloud) {
         if (areAllZeros(measuredPointCloud)) {
@@ -98,14 +105,21 @@ public class PointCloudPositionEstimator {
         MapPoint[] roughParticles = generateParticles(robotPose, 45, 0.05, 0.006);
         double[] particleScores = scoreParticlesWithTwist(roughParticles, measuredPointCloud,
                 roughPose.getRotation().getDegrees());// lower is better
-        MapPoint bestParticle = getBestParticle(roughParticles, particleScores);
+        MapPoint bestParticle = averageAmongBestParticles(roughParticles, particleScores);
 
         // we have the 1st estimate now we need to refine this
         MapPoint[] moderateParticles = generateParticles(bestParticle, 20, 0.02, 0.001);
         double[] moderateParticleScores = scoreParticlesWithTwist(moderateParticles, measuredPointCloud,
                 roughPose.getRotation().getDegrees());
-        MapPoint bestModerateParticle = getBestParticle(moderateParticles, moderateParticleScores);
-        return new FieldPoint(bestModerateParticle.x, bestModerateParticle.y);
+        MapPoint bestModerateParticle = averageAmongBestParticles(moderateParticles, moderateParticleScores);
+
+        // 3rd pass for fine tuning
+        MapPoint[] fineParticles = generateParticles(bestModerateParticle, 20, 0.006, 0.001);
+        double[] fineParticleScores = scoreParticlesWithTwist(fineParticles, measuredPointCloud,
+                roughPose.getRotation().getDegrees());
+        MapPoint bestFineParticle = averageAmongBestParticles(fineParticles, fineParticleScores);
+
+        return new FieldPoint(bestFineParticle.x, bestFineParticle.y);
     }
 
     public static double interpolate(double a, double aConfidence, double b, double bConfidence){
@@ -127,6 +141,16 @@ public class PointCloudPositionEstimator {
             }
         }
         return true;
+    }
+    public static boolean tooLittleUsefulData(double[][] measuredPointCloud) {
+        int usefulPoints = 0;
+        for (int i = 0; i < measuredPointCloud.length; i++) {
+            for(int j = 0; j < measuredPointCloud[i].length; j++){
+                if (measuredPointCloud[i][j] != 0)
+                    usefulPoints++;
+            }
+        }
+        return usefulPoints < 20;
     }
     // lower number is higher confidence
     public static double getXConfidence(MapPoint[] idealPointsSeen){
@@ -366,11 +390,11 @@ public class PointCloudPositionEstimator {
 
     public static boolean isTooClose(MapPoint pointToCheck, MapPoint[] PreviousPoints, short arrayPosition,
             double minDistance) {
+        double minDistSq = minDistance * minDistance;
         for (int i = 0; i < arrayPosition; i++) {
-            double distance = Math.sqrt(
-                    (pointToCheck.x - PreviousPoints[i].x) * (pointToCheck.x - PreviousPoints[i].x) +
-                            (pointToCheck.y - PreviousPoints[i].y) * (pointToCheck.y - PreviousPoints[i].y));
-            if (distance < minDistance) {
+            double distSq = (pointToCheck.x - PreviousPoints[i].x) * (pointToCheck.x - PreviousPoints[i].x) +
+                            (pointToCheck.y - PreviousPoints[i].y) * (pointToCheck.y - PreviousPoints[i].y);
+            if (distSq < minDistSq) {
                 return true;
             }
         }
