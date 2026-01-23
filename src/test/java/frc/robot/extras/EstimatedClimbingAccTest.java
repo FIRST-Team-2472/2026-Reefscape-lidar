@@ -20,6 +20,7 @@ public class EstimatedClimbingAccTest {
         double totalStartingInnacuracy = 0;
         double totalICPImprovement = 0;
         double totalParticleFilterImprovement = 0;
+        double totalFastPFImprovement = 0;
         double sumFinalError = 0;
         double sumSqFinalError = 0;
 
@@ -58,16 +59,20 @@ public class EstimatedClimbingAccTest {
                     SimulatedDualScan, new Polygon[]{LidarMap.getMap()[2]});
             FieldPoint ParticleFilterPose = PointCloudPositionEstimator.estimatePoseDualLidarParticleFilter(new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
                     SimulatedDualScan, new Polygon[]{LidarMap.getMap()[2]});
+            FieldPoint FastPFPose = PointCloudPositionEstimator.estimatePoseDualLidarParticleFilterFast(new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
+                    SimulatedDualScan, new Polygon[]{LidarMap.getMap()[2]});
 
             double lidarInnacuracy = Math.hypot(trueX - calculatedPose.getX(), trueY - calculatedPose.getY());
             double ICPOnlyInnacuracy = Math.hypot(trueX - ICPOnlyPose.getX(), trueY - ICPOnlyPose.getY());
             double ParticleFilterInnacuracy = Math.hypot(trueX - ParticleFilterPose.getX(), trueY - ParticleFilterPose.getY());
+            double FastPFInnacuracy = Math.hypot(trueX - FastPFPose.getX(), trueY - FastPFPose.getY());
             double inputInnacuracy = Math.hypot(trueX - innacurateX, trueY - innacurateY);
 
             if (lidarInnacuracy != inputInnacuracy) {
                 totalClimbingImprovement += (inputInnacuracy - lidarInnacuracy);
                 totalICPImprovement += (inputInnacuracy - ICPOnlyInnacuracy);
                 totalParticleFilterImprovement += (inputInnacuracy - ParticleFilterInnacuracy);
+                totalFastPFImprovement += (inputInnacuracy - FastPFInnacuracy);
                 climbingImprovedIterations++;
                 totalStartingInnacuracy += inputInnacuracy;
                 
@@ -80,6 +85,7 @@ public class EstimatedClimbingAccTest {
         double averageClimbingImprovementWhileSeeing = totalClimbingImprovement / climbingImprovedIterations;
         double averageICPImprovementWhileSeeing = totalICPImprovement / climbingImprovedIterations;
         double averageParticleFilterImprovementWhileSeeing = totalParticleFilterImprovement / climbingImprovedIterations;
+        double averageFastPFImprovementWhileSeeing = totalFastPFImprovement / climbingImprovedIterations;
 
         System.out.println(
                 "EstimatedClimbingAccTest complete. Average Climbing Improvement when seeing something: "
@@ -92,6 +98,10 @@ public class EstimatedClimbingAccTest {
         System.out.println(
                 "EstimatedClimbingAccTest complete. Average Particle Filter Improvement when seeing something: "
                         + averageParticleFilterImprovementWhileSeeing + " meters over " + climbingImprovedIterations
+                        + " iterations out of " + iterations + " total.");
+        System.out.println(
+                "EstimatedClimbingAccTest complete. Average Fast PF Improvement when seeing something: "
+                        + averageFastPFImprovementWhileSeeing + " meters over " + climbingImprovedIterations
                         + " iterations out of " + iterations + " total.");
 
         System.out.println(

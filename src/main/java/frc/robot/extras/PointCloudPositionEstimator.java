@@ -602,6 +602,25 @@ public class PointCloudPositionEstimator {
         MapPoint bestFineParticle = averageAmongBestParticles(fineParticles, fineParticleScores);
         return new FieldPoint(bestFineParticle.x, bestFineParticle.y);
     }
+    public static FieldPoint estimatePoseDualLidarParticleFilterFast(FieldPose2d roughPose, double[][] measuredPointClouds, Polygon[] map){
+        if (tooLittleUsefulData(measuredPointClouds)) {
+            return new FieldPoint(roughPose.getX(), roughPose.getY());
+        }
+        MapPoint robotPose = new MapPoint(roughPose.getX(), roughPose.getY());
+        MapPoint[] roughParticles = generateParticles(robotPose, 45, 0.05, 0.006);
+        double[] particleScores = scoreParticlesWithTwist(roughParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestParticle = averageAmongBestParticles(roughParticles, particleScores);
+
+        // we have the 1st estimate now we need to refine this
+        MapPoint[] moderateParticles = generateParticles(bestParticle, 20, 0.02, 0.001);
+        double[] moderateParticleScores = scoreParticlesWithTwist(moderateParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestModerateParticle = averageAmongBestParticles(moderateParticles, moderateParticleScores);
+
+        // Skip 3rd pass for speed
+        return new FieldPoint(bestModerateParticle.x, bestModerateParticle.y);
+    }
 
     public static double[] scoreParticles(MapPoint[] roughParticles, double[] measuredPointCloud,
             double robotAngleDegrees, frc.robot.extras.LidarMapComponents.Polygon[] map) {
