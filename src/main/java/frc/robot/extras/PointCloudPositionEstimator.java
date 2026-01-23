@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.LidarConstants;
 import frc.robot.extras.LidarMapComponents.LidarSimulator;
 import frc.robot.extras.LidarMapComponents.MapPoint;
+import frc.robot.extras.LidarMapComponents.Polygon;
 
 //this class is designed to take in a point cloud and a rough pose estimate and return a refined pose estimate
 //it does so by comparing the measured point cloud to simulated point clouds at various nearby positions and selecting the best match
@@ -547,7 +548,7 @@ public class PointCloudPositionEstimator {
         return false;
     }
 
-    public static FieldPoint estimatePose(FieldPose2d roughPose, double[][] measuredPointCloud, frc.robot.extras.LidarMapComponents.Polygon[] map) {
+    public static FieldPoint estimatePose(FieldPose2d roughPose, double[][] measuredPointCloud, Polygon[] map) {
         if (tooLittleUsefulData(measuredPointCloud)) {
             return new FieldPoint(roughPose.getX(), roughPose.getY());
         }
@@ -573,6 +574,33 @@ public class PointCloudPositionEstimator {
         FieldPose2d refinedPose = refinePoseICP(icpStart, measuredPointCloud, map);
 
         return new FieldPoint(refinedPose.getX(), refinedPose.getY());
+    }
+    public static FieldPoint estimatePoseDualLidarICP(FieldPose2d roughPose, double[][] measuredPointClouds, Polygon[] map){
+        FieldPose2d ICPPose = refinePoseICP(roughPose, measuredPointClouds, map);
+        return new FieldPoint(ICPPose.getX(), ICPPose.getY());
+    }
+    public static FieldPoint estimatePoseDualLidarParticleFilter(FieldPose2d roughPose, double[][] measuredPointClouds, Polygon[] map){
+        if (tooLittleUsefulData(measuredPointClouds)) {
+            return new FieldPoint(roughPose.getX(), roughPose.getY());
+        }
+        MapPoint robotPose = new MapPoint(roughPose.getX(), roughPose.getY());
+        MapPoint[] roughParticles = generateParticles(robotPose, 45, 0.05, 0.006);
+        double[] particleScores = scoreParticlesWithTwist(roughParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestParticle = averageAmongBestParticles(roughParticles, particleScores);
+
+        // we have the 1st estimate now we need to refine this
+        MapPoint[] moderateParticles = generateParticles(bestParticle, 20, 0.02, 0.001);
+        double[] moderateParticleScores = scoreParticlesWithTwist(moderateParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestModerateParticle = averageAmongBestParticles(moderateParticles, moderateParticleScores);
+
+        // 3rd pass for fine tuning
+        MapPoint[] fineParticles = generateParticles(bestModerateParticle, 20, 0.006, 0.001);
+        double[] fineParticleScores = scoreParticlesWithTwist(fineParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestFineParticle = averageAmongBestParticles(fineParticles, fineParticleScores);
+        return new FieldPoint(bestFineParticle.x, bestFineParticle.y);
     }
 
     public static double[] scoreParticles(MapPoint[] roughParticles, double[] measuredPointCloud,

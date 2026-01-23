@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.LidarConstants;
 import frc.robot.extras.LidarMapComponents.LidarSimulator;
 import frc.robot.extras.LidarMapComponents.MapPoint;
+import frc.robot.extras.LidarMapComponents.Polygon;
 
 public class EstimatedClimbingAccTest {
     @Test
@@ -17,6 +18,8 @@ public class EstimatedClimbingAccTest {
         int climbingImprovedIterations = 0;
         double totalClimbingImprovement = 0;
         double totalStartingInnacuracy = 0;
+        double totalICPImprovement = 0;
+        double totalParticleFilterImprovement = 0;
         double sumFinalError = 0;
         double sumSqFinalError = 0;
 
@@ -43,21 +46,28 @@ public class EstimatedClimbingAccTest {
                     1, // messy with accurate angle
                     LidarConstants.kLidarHorizontalOffsetFromCenterMeters,
                     LidarConstants.kLidarAngleOffsetFromForwardDegrees,
-                    new frc.robot.extras.LidarMapComponents.Polygon[]{frc.robot.extras.LidarMap.getMap()[2]});
+                    new Polygon[]{LidarMap.getMap()[2]});
             
             // Assume simulator map is correct from previous reasoning (we want map[2] for tower)
 
             // Estimate pose using dual lidar data
             FieldPoint calculatedPose = PointCloudPositionEstimator.estimatePose(
                     new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
-                    SimulatedDualScan,
-                    new frc.robot.extras.LidarMapComponents.Polygon[]{frc.robot.extras.LidarMap.getMap()[2]});
+                    SimulatedDualScan, new Polygon[]{LidarMap.getMap()[2]});
+            FieldPoint ICPOnlyPose = PointCloudPositionEstimator.estimatePoseDualLidarICP(new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
+                    SimulatedDualScan, new Polygon[]{LidarMap.getMap()[2]});
+            FieldPoint ParticleFilterPose = PointCloudPositionEstimator.estimatePoseDualLidarParticleFilter(new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
+                    SimulatedDualScan, new Polygon[]{LidarMap.getMap()[2]});
 
             double lidarInnacuracy = Math.hypot(trueX - calculatedPose.getX(), trueY - calculatedPose.getY());
+            double ICPOnlyInnacuracy = Math.hypot(trueX - ICPOnlyPose.getX(), trueY - ICPOnlyPose.getY());
+            double ParticleFilterInnacuracy = Math.hypot(trueX - ParticleFilterPose.getX(), trueY - ParticleFilterPose.getY());
             double inputInnacuracy = Math.hypot(trueX - innacurateX, trueY - innacurateY);
 
             if (lidarInnacuracy != inputInnacuracy) {
                 totalClimbingImprovement += (inputInnacuracy - lidarInnacuracy);
+                totalICPImprovement += (inputInnacuracy - ICPOnlyInnacuracy);
+                totalParticleFilterImprovement += (inputInnacuracy - ParticleFilterInnacuracy);
                 climbingImprovedIterations++;
                 totalStartingInnacuracy += inputInnacuracy;
                 
@@ -68,9 +78,20 @@ public class EstimatedClimbingAccTest {
         }
 
         double averageClimbingImprovementWhileSeeing = totalClimbingImprovement / climbingImprovedIterations;
+        double averageICPImprovementWhileSeeing = totalICPImprovement / climbingImprovedIterations;
+        double averageParticleFilterImprovementWhileSeeing = totalParticleFilterImprovement / climbingImprovedIterations;
+
         System.out.println(
                 "EstimatedClimbingAccTest complete. Average Climbing Improvement when seeing something: "
                         + averageClimbingImprovementWhileSeeing + " meters over " + climbingImprovedIterations
+                        + " iterations out of " + iterations + " total.");
+        System.out.println(
+                "EstimatedClimbingAccTest complete. Average ICP Improvement when seeing something: "
+                        + averageICPImprovementWhileSeeing + " meters over " + climbingImprovedIterations
+                        + " iterations out of " + iterations + " total.");
+        System.out.println(
+                "EstimatedClimbingAccTest complete. Average Particle Filter Improvement when seeing something: "
+                        + averageParticleFilterImprovementWhileSeeing + " meters over " + climbingImprovedIterations
                         + " iterations out of " + iterations + " total.");
 
         System.out.println(

@@ -43,6 +43,7 @@ public class EstimatedAccuracyTest {
                     new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
                     SimulatedScan, predeterminedParticle);
 
+
             double lidarInnacuracy = Math.hypot(trueX - calculatedPose.getX(), trueY - calculatedPose.getY());
             double inputInnacuracy = Math.hypot(trueX - innacurateX, trueY - innacurateY);
 
