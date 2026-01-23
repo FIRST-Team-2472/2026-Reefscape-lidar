@@ -471,6 +471,131 @@ public class PointCloudPositionEstimator {
         return new FieldPose2d(x, y, new edu.wpi.first.math.geometry.Rotation2d(theta));
     }
 
+    public static FieldPose2d refinePoseICP(FieldPose2d roughPose, double[][] measuredPointCloud, frc.robot.extras.LidarMapComponents.Polygon[] map) {
+        int maxIterations = 40;
+        double convergenceThreshold = 1e-6; 
+
+        double x = roughPose.getX();
+        double y = roughPose.getY();
+        double theta = roughPose.getRotation().getRadians();
+
+        double lidarOffsetH = LidarConstants.kLidarHorizontalOffsetFromCenterMeters; 
+        double lidarAngleOffset = Math.toRadians(LidarConstants.kLidarAngleOffsetFromForwardDegrees);
+
+        java.util.ArrayList<frc.robot.extras.LidarMapComponents.LineSegment> segments = new java.util.ArrayList<>();
+        for (frc.robot.extras.LidarMapComponents.Polygon p : map) {
+            for (frc.robot.extras.LidarMapComponents.LineSegment s : p.LineSegmentArray) {
+                segments.add(s);
+            }
+        }
+
+        for (int iter = 0; iter < maxIterations; iter++) {
+            double[][] A = new double[3][3];
+            double[] B = new double[3];
+            int pointsUsed = 0;
+
+            for (int lidarIdx = 0; lidarIdx < 2; lidarIdx++) {
+                double lidarBaseAngle = (lidarIdx == 0) ? -lidarAngleOffset : lidarAngleOffset;
+                double lidarLocalX = 0; 
+                double lidarLocalY = (lidarIdx == 0) ? lidarOffsetH : -lidarOffsetH;
+                
+                double[] cloud = measuredPointCloud[lidarIdx];
+
+                for (int i = 0; i < cloud.length; i++) {
+                    double range = cloud[i];
+                    if (range < 0.01 || range > 10.0) continue; 
+
+                    double rayAngle = lidarBaseAngle + Math.toRadians(i * 0.6 - 50);
+                    double pLocalX = lidarLocalX + range * Math.cos(rayAngle);
+                    double pLocalY = lidarLocalY + range * Math.sin(rayAngle);
+
+                    double cosTheta = Math.cos(theta);
+                    double sinTheta = Math.sin(theta);
+                    double pGlobalX = x + pLocalX * cosTheta - pLocalY * sinTheta;
+                    double pGlobalY = y + pLocalX * sinTheta + pLocalY * cosTheta;
+
+                    double minDistSq = Double.MAX_VALUE;
+                    frc.robot.extras.LidarMapComponents.LineSegment bestSeg = null;
+
+                    for (frc.robot.extras.LidarMapComponents.LineSegment seg : segments) {
+                        double distSq = getDistanceSqToSegment(pGlobalX, pGlobalY, seg);
+                        if (distSq < minDistSq) {
+                            minDistSq = distSq;
+                            bestSeg = seg;
+                        }
+                    }
+
+                    if (bestSeg != null && minDistSq < 0.2) { 
+                         double segDx = bestSeg.endPoint.x - bestSeg.startPoint.x;
+                         double segDy = bestSeg.endPoint.y - bestSeg.startPoint.y;
+                         
+                         // Tighter bounds check (approx 1m extension allowed for 10m wall)
+                         double t = ((pGlobalX - bestSeg.startPoint.x) * segDx + (pGlobalY - bestSeg.startPoint.y) * segDy) / (segDx * segDx + segDy * segDy);
+                         if (t < -0.1 || t > 1.1) continue;
+
+                         double segLen = Math.hypot(segDx, segDy);
+                         double nx = -segDy / segLen;
+                         double ny = segDx / segLen;
+                         
+                         double C = (pGlobalX - bestSeg.startPoint.x) * nx + (pGlobalY - bestSeg.startPoint.y) * ny;
+                         
+                         double vx = pGlobalX - x;
+                         double vy = pGlobalY - y;
+                         
+                         double J_rot = -nx * vy + ny * vx; 
+                         
+                         // Improved Weighting:
+                         // 1. Clamp range to avoid singularity
+                         // 2. Add robust loss (Huber-like): downweight large residuals
+                         double safeRange = Math.max(range, 0.1); 
+                         double rangeWeight = 1.0 / (safeRange * safeRange);
+                         
+                         double residual = Math.abs(C);
+                         double robustWeight = 1.0;
+                         if (residual > 0.05) { // If error > 5cm, reduce influence
+                             robustWeight = 0.05 / residual;
+                         }
+
+                         double w = rangeWeight * robustWeight;
+
+                         A[0][0] += w * nx*nx;
+                         A[0][1] += w * nx*ny;
+                         A[0][2] += w * nx*J_rot;
+                         
+                         A[1][0] += w * nx*ny; 
+                         A[1][1] += w * ny*ny;
+                         A[1][2] += w * ny*J_rot;
+                         
+                         A[2][0] += w * nx*J_rot; 
+                         A[2][1] += w * ny*J_rot;
+                         A[2][2] += w * J_rot*J_rot;
+                         
+                         B[0] += w * nx * (-C);
+                         B[1] += w * ny * (-C);
+                         B[2] += w * J_rot * (-C);
+                         
+                         pointsUsed++;
+                    }
+                }
+            }
+            
+            if (pointsUsed < 10) break; 
+            
+            double[] sol = solve3x3(A, B);
+            if (sol == null) break; 
+            
+            x += sol[0];
+            y += sol[1];
+            theta += sol[2];
+            
+            if (Math.abs(sol[0]) < convergenceThreshold && Math.abs(sol[1]) < convergenceThreshold && Math.abs(sol[2]) < Math.toRadians(0.01)) {
+                break;
+            }
+        }
+        
+        return new FieldPose2d(x, y, new edu.wpi.first.math.geometry.Rotation2d(theta));
+    }
+
     private static double getDistanceSqToSegment(double px, double py, frc.robot.extras.LidarMapComponents.LineSegment seg) {
         double x1 = seg.startPoint.x;
         double y1 = seg.startPoint.y;
@@ -621,15 +746,94 @@ public class PointCloudPositionEstimator {
         // Skip 3rd pass for speed
         return new FieldPoint(bestModerateParticle.x, bestModerateParticle.y);
     }
+    public static FieldPoint estimatePoseDualLidarParticleFilterFaster(FieldPose2d roughPose, double[][] measuredPointClouds, Polygon[] map){
+        if (tooLittleUsefulData(measuredPointClouds)) {
+            return new FieldPoint(roughPose.getX(), roughPose.getY());
+        }
+        MapPoint robotPose = new MapPoint(roughPose.getX(), roughPose.getY());
+        MapPoint[] roughParticles = generateParticles(robotPose, 45, 0.05, 0.006);
+        double[] particleScores = scoreParticlesWithTwist(roughParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestParticle = averageAmongBestParticles(roughParticles, particleScores);
 
-    public static double[] scoreParticles(MapPoint[] roughParticles, double[] measuredPointCloud,
+        // we have the 1st estimate now we need to refine this
+        MapPoint[] moderateParticles = generateParticles(bestParticle, 20, 0.02, 0.001);
+        double[] moderateParticleScores = scoreParticlesWithTwist(moderateParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestModerateParticle = averageAmongBestParticles(moderateParticles, moderateParticleScores);
+
+        // Skip 3rd pass for speed
+        return new FieldPoint(bestModerateParticle.x, bestModerateParticle.y);
+    }
+    public static FieldPoint estimatePoseDualLidarParticleFilterEvenFaster(FieldPose2d roughPose, double[][] measuredPointClouds, Polygon[] map){
+        if (tooLittleUsefulData(measuredPointClouds)) {
+            return new FieldPoint(roughPose.getX(), roughPose.getY());
+        }
+        MapPoint robotPose = new MapPoint(roughPose.getX(), roughPose.getY());
+        MapPoint[] roughParticles = generateParticles(robotPose, 45, 0.05, 0.006);
+        double[] particleScores = scoreParticlesNoTwist(roughParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestParticle = averageAmongBestParticles(roughParticles, particleScores);
+
+        // we have the 1st estimate now we need to refine this
+        MapPoint[] moderateParticles = generateParticles(bestParticle, 20, 0.02, 0.001);
+        double[] moderateParticleScores = scoreParticlesNoTwist(moderateParticles, measuredPointClouds,
+                roughPose.getRotation().getDegrees(), map);
+        MapPoint bestModerateParticle = averageAmongBestParticles(moderateParticles, moderateParticleScores);
+
+        // Skip 3rd pass for speed
+        return new FieldPoint(bestModerateParticle.x, bestModerateParticle.y);
+    }
+
+    public static double[] scoreParticlesNoTwist(MapPoint[] roughParticles, double[][] measuredPointClouds,
             double robotAngleDegrees, frc.robot.extras.LidarMapComponents.Polygon[] map) {
         // lower is better
         double maxLidarRange = 0.3; // 30cm limit from simulator
         double minLidarRange = 0.025; // 25mm limit
+        
+        // Single angle check
+        return java.util.stream.IntStream.range(0, roughParticles.length).parallel().mapToDouble(i -> {
+            double testingAngle = robotAngleDegrees;
+            
+            double[][] expectedMeasurementsAtParticle = LidarSimulator.getDualLidarSimData(roughParticles[i],   
+                    testingAngle, 0, LidarConstants.kLidarHorizontalOffsetFromCenterMeters, LidarConstants.kLidarAngleOffsetFromForwardDegrees, map);
+            double score = 0;
+            for (int j = 0; j < measuredPointClouds.length; j++) {
+                for(int l = 0; l < measuredPointClouds[j].length; l++){
+                    if (l >= expectedMeasurementsAtParticle[j].length) break; // Check bounds
+
+                    double m = measuredPointClouds[j][l];
+                    double e = expectedMeasurementsAtParticle[j][l];
+
+                    if (m == 0 && e == 0) {
+                        continue; // Both agree on "out of range"
+                    } else if (m != 0 && e != 0) {
+                        // Both valid, standard error
+                        score += (m - e) * (m - e);
+                    } else {
+                        // One is valid, one is 0 (out of range/invalid)
+                        double v = (m != 0) ? m : e;
+                        
+                        double distToLow = Math.abs(v - minLidarRange);
+                        double distToHigh = Math.abs(maxLidarRange - v);
+                        
+                        double error = Math.min(distToLow, distToHigh);
+                        score += error * error;
+                    }
+                }
+            }
+            return score;
+        }).toArray();
+    }
+    
+    // Overloads with Map support
+    public static double[] scoreParticles(MapPoint[] roughParticles, double[] measuredPointCloud,
+            double robotAngleDegrees, frc.robot.extras.LidarMapComponents.Polygon[] map) {
+         // lower is better
+        double maxLidarRange = 0.3; // 30cm limit from simulator
+        double minLidarRange = 0.025; // 25mm limit
 
         return java.util.stream.IntStream.range(0, roughParticles.length).parallel().mapToDouble(i -> {
-            // we just assume rotation is perfect for now
             double[] expectedMeasurementAtParticle = LidarSimulator.getPerfectSimData(roughParticles[i],
                     robotAngleDegrees, map);
             double score = 0;
@@ -640,15 +844,11 @@ public class PointCloudPositionEstimator {
                 if (m == 0 && e == 0) {
                     continue; // Both agree on "out of range"
                 } else if (m != 0 && e != 0) {
-                     // Both valid, standard error
                     score += (m - e) * (m - e);
                 } else {
-                    // One is valid, one is 0 (out of range/invalid)
                     double v = (m != 0) ? m : e;
-                    
                     double distToLow = Math.abs(v - minLidarRange);
                     double distToHigh = Math.abs(maxLidarRange - v);
-                    
                     double error = Math.min(distToLow, distToHigh);
                     score += error * error;
                 }
@@ -656,6 +856,43 @@ public class PointCloudPositionEstimator {
             return score;
         }).toArray();
     }
+
+    public static double[] scoreParticles(MapPoint[] roughParticles, double[][] measuredPointClouds,
+            double robotAngleDegrees, frc.robot.extras.LidarMapComponents.Polygon[] map) {
+        // lower is better
+        double maxLidarRange = 0.3; // 30cm limit from simulator
+        double minLidarRange = 0.025; // 25mm limit
+
+        return java.util.stream.IntStream.range(0, roughParticles.length).parallel().mapToDouble(i -> {
+            // we just assume rotation is perfect for now
+            double[][] expectedMeasurementsAtParticle = LidarSimulator.getDualLidarSimData(roughParticles[i],
+                    robotAngleDegrees, 0, LidarConstants.kLidarHorizontalOffsetFromCenterMeters, LidarConstants.kLidarAngleOffsetFromForwardDegrees, map);
+            double score = 0;
+            for (int j = 0; j < measuredPointClouds.length; j++) {
+                for(int l = 0; l < measuredPointClouds[j].length; l++){
+                    if (l >= expectedMeasurementsAtParticle[j].length) break; // Check bounds
+
+                    double m = measuredPointClouds[j][l];
+                    double e = expectedMeasurementsAtParticle[j][l];
+
+                    if (m == 0 && e == 0) {
+                        continue; // Both agree on "out of range"
+                    } else if (m != 0 && e != 0) {
+                        score += (m - e) * (m - e);
+                    } else {
+                        double v = (m != 0) ? m : e;
+                        double distToLow = Math.abs(v - minLidarRange);
+                        double distToHigh = Math.abs(maxLidarRange - v);
+                        double error = Math.min(distToLow, distToHigh);
+                        score += error * error;
+                    }
+                }
+                
+            }
+            return score;
+        }).toArray();
+    }
+
     public static double[] scoreParticlesWithTwist(MapPoint[] roughParticles, double[][] measuredPointClouds,
             double robotAngleDegrees, frc.robot.extras.LidarMapComponents.Polygon[] map) {
         // lower is better
@@ -684,7 +921,6 @@ public class PointCloudPositionEstimator {
                         if (m == 0 && e == 0) {
                             continue; // Both agree on "out of range"
                         } else if (m != 0 && e != 0) {
-                            // Both valid, standard error
                             score += (m - e) * (m - e);
                         } else {
                             // One is valid, one is 0 (out of range/invalid)
@@ -703,131 +939,5 @@ public class PointCloudPositionEstimator {
             }
             return bestParticleScore;
         }).toArray();
-    }
-    public static FieldPose2d refinePoseICP(FieldPose2d roughPose, double[][] measuredPointCloud, frc.robot.extras.LidarMapComponents.Polygon[] map) {
-        int maxIterations = 40;
-        double convergenceThreshold = 1e-6; 
-
-        double x = roughPose.getX();
-        double y = roughPose.getY();
-        double theta = roughPose.getRotation().getRadians();
-
-        double lidarOffsetH = LidarConstants.kLidarHorizontalOffsetFromCenterMeters; 
-        double lidarAngleOffset = Math.toRadians(LidarConstants.kLidarAngleOffsetFromForwardDegrees);
-
-        java.util.ArrayList<frc.robot.extras.LidarMapComponents.LineSegment> segments = new java.util.ArrayList<>();
-        for (frc.robot.extras.LidarMapComponents.Polygon p : map) {
-            for (frc.robot.extras.LidarMapComponents.LineSegment s : p.LineSegmentArray) {
-                segments.add(s);
-            }
-        }
-
-        for (int iter = 0; iter < maxIterations; iter++) {
-            double[][] A = new double[3][3];
-            double[] B = new double[3];
-            int pointsUsed = 0;
-
-            for (int lidarIdx = 0; lidarIdx < 2; lidarIdx++) {
-                double lidarBaseAngle = (lidarIdx == 0) ? -lidarAngleOffset : lidarAngleOffset;
-                double lidarLocalX = 0; 
-                double lidarLocalY = (lidarIdx == 0) ? lidarOffsetH : -lidarOffsetH;
-                
-                double[] cloud = measuredPointCloud[lidarIdx];
-
-                for (int i = 0; i < cloud.length; i += 2) {
-                    double range = cloud[i];
-                    if (range < 0.01 || range > 10.0) continue; 
-
-                    double rayAngle = lidarBaseAngle + Math.toRadians(i * 0.6 - 50);
-                    double pLocalX = lidarLocalX + range * Math.cos(rayAngle);
-                    double pLocalY = lidarLocalY + range * Math.sin(rayAngle);
-
-                    double cosTheta = Math.cos(theta);
-                    double sinTheta = Math.sin(theta);
-                    double pGlobalX = x + pLocalX * cosTheta - pLocalY * sinTheta;
-                    double pGlobalY = y + pLocalX * sinTheta + pLocalY * cosTheta;
-
-                    double minDistSq = Double.MAX_VALUE;
-                    frc.robot.extras.LidarMapComponents.LineSegment bestSeg = null;
-
-                    for (frc.robot.extras.LidarMapComponents.LineSegment seg : segments) {
-                        double distSq = getDistanceSqToSegment(pGlobalX, pGlobalY, seg);
-                        if (distSq < minDistSq) {
-                            minDistSq = distSq;
-                            bestSeg = seg;
-                        }
-                    }
-
-                    if (bestSeg != null && minDistSq < 0.01) { 
-                         double segDx = bestSeg.endPoint.x - bestSeg.startPoint.x;
-                         double segDy = bestSeg.endPoint.y - bestSeg.startPoint.y;
-                         
-                         double t = ((pGlobalX - bestSeg.startPoint.x) * segDx + (pGlobalY - bestSeg.startPoint.y) * segDy) / (segDx * segDx + segDy * segDy);
-                         if (t < -0.1 || t > 1.1) continue;
-
-                         double segLen = Math.hypot(segDx, segDy);
-                         double nx = -segDy / segLen;
-                         double ny = segDx / segLen;
-                         
-                         double dxToRobot = x - pGlobalX;
-                         double dyToRobot = y - pGlobalY;
-                         if (nx * dxToRobot + ny * dyToRobot < 0) {
-                             nx = -nx; 
-                             ny = -ny;
-                         }
-                         
-                         double C = (pGlobalX - bestSeg.startPoint.x) * nx + (pGlobalY - bestSeg.startPoint.y) * ny;
-                         
-                         double vx = pGlobalX - x;
-                         double vy = pGlobalY - y;
-                         
-                         double J_rot = -nx * vy + ny * vx; 
-                         
-                         double safeRange = Math.max(range, 0.1); 
-                         double w = 1.0 / (safeRange * safeRange);
-
-                         A[0][0] += w * nx*nx;
-                         A[0][1] += w * nx*ny;
-                         A[0][2] += w * nx*J_rot;
-                         
-                         A[1][0] += w * nx*ny; 
-                         A[1][1] += w * ny*ny;
-                         A[1][2] += w * ny*J_rot;
-                         
-                         A[2][0] += w * nx*J_rot; 
-                         A[2][1] += w * ny*J_rot;
-                         A[2][2] += w * J_rot*J_rot;
-                         
-                         B[0] += w * nx * (-C);
-                         B[1] += w * ny * (-C);
-                         B[2] += w * J_rot * (-C);
-                         
-                         pointsUsed++;
-                    }
-                }
-            }
-            
-            if (pointsUsed < 10) break; 
-            
-            double damping = 0.5; 
-            A[0][0] += damping;
-            A[1][1] += damping;
-            A[2][2] += damping;
-            
-            double[] sol = solve3x3(A, B);
-            if (sol == null) break; 
-            
-            x += sol[0];
-            y += sol[1];
-            theta += sol[2];
-            
-            theta = edu.wpi.first.math.MathUtil.angleModulus(theta);
-            
-            if (Math.abs(sol[0]) < convergenceThreshold && Math.abs(sol[1]) < convergenceThreshold && Math.abs(sol[2]) < Math.toRadians(0.01)) {
-                break;
-            }
-        }
-        
-        return new FieldPose2d(x, y, new edu.wpi.first.math.geometry.Rotation2d(theta));
     }
 }
