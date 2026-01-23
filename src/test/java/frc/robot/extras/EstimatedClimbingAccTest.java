@@ -17,6 +17,8 @@ public class EstimatedClimbingAccTest {
         int climbingImprovedIterations = 0;
         double totalClimbingImprovement = 0;
         double totalStartingInnacuracy = 0;
+        double sumFinalError = 0;
+        double sumSqFinalError = 0;
 
         System.out.println("Starting EstimatedClimbingAccTest...");
 
@@ -40,12 +42,16 @@ public class EstimatedClimbingAccTest {
                     trueRotation,
                     1, // messy with accurate angle
                     LidarConstants.kLidarHorizontalOffsetFromCenterMeters,
-                    LidarConstants.kLidarAngleOffsetFromForwardDegrees);
+                    LidarConstants.kLidarAngleOffsetFromForwardDegrees,
+                    new frc.robot.extras.LidarMapComponents.Polygon[]{frc.robot.extras.LidarMap.getMap()[2]});
+            
+            // Assume simulator map is correct from previous reasoning (we want map[2] for tower)
 
             // Estimate pose using dual lidar data
             FieldPoint calculatedPose = PointCloudPositionEstimator.estimatePose(
                     new FieldPose2d(innacurateX, innacurateY, Rotation2d.fromDegrees(innacurateRotation)),
-                    SimulatedDualScan);
+                    SimulatedDualScan,
+                    new frc.robot.extras.LidarMapComponents.Polygon[]{frc.robot.extras.LidarMap.getMap()[2]});
 
             double lidarInnacuracy = Math.hypot(trueX - calculatedPose.getX(), trueY - calculatedPose.getY());
             double inputInnacuracy = Math.hypot(trueX - innacurateX, trueY - innacurateY);
@@ -54,6 +60,9 @@ public class EstimatedClimbingAccTest {
                 totalClimbingImprovement += (inputInnacuracy - lidarInnacuracy);
                 climbingImprovedIterations++;
                 totalStartingInnacuracy += inputInnacuracy;
+                
+                sumFinalError += lidarInnacuracy;
+                sumSqFinalError += lidarInnacuracy * lidarInnacuracy;
             }
 
         }
@@ -68,5 +77,12 @@ public class EstimatedClimbingAccTest {
                 "Average Starting Innacuracy when seeing something: "
                         + (totalStartingInnacuracy / climbingImprovedIterations) + " meters over "
                         + climbingImprovedIterations + " iterations out of " + iterations + " total.");
+
+        double meanFinalError = sumFinalError / climbingImprovedIterations;
+        double variance = (sumSqFinalError / climbingImprovedIterations) - (meanFinalError * meanFinalError);
+        double stdDev = Math.sqrt(variance);
+        
+        System.out.println("Final Accuracy Mean: " + meanFinalError + " meters");
+        System.out.println("Final Accuracy Std Dev: " + stdDev + " meters");
     }
 }

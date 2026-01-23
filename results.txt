@@ -1,0 +1,276 @@
+Initialized native services in: C:\Users\Aiden\.gradle\native
+Initialized jansi services in: C:\Users\Aiden\.gradle\native
+Found daemon DaemonInfo{pid=30240, address=[222d5745-9785-4134-984c-5d4caca520e4 port:65371, addresses:[/127.0.0.1]], state=Idle, lastBusy=1765834464496, context=DefaultDaemonContext[uid=4295a0fd-aa81-4ded-8f58-d21a001d62dc,javaHome=C:\Users\Aiden\.vscode\extensions\redhat.java-1.46.0-win32-x64\jre\21.0.8-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=30240,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=4295a0fd-aa81-4ded-8f58-d21a001d62dc,javaHome=C:\Users\Aiden\.vscode\extensions\redhat.java-1.46.0-win32-x64\jre\21.0.8-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=30240,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=35812, address=[34a76d44-8f65-480a-ac5e-9332afc1c769 port:57899, addresses:[/127.0.0.1]], state=Idle, lastBusy=1768076504512, context=DefaultDaemonContext[uid=8c3a1001-d5e3-4f34-87ab-7b92d6065ef5,javaHome=C:\Users\Aiden\.vscode\extensions\redhat.java-1.50.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=35812,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=8c3a1001-d5e3-4f34-87ab-7b92d6065ef5,javaHome=C:\Users\Aiden\.vscode\extensions\redhat.java-1.50.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=35812,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=37940, address=[7fbf3302-2aa9-4fb5-8511-8369d8430208 port:58607, addresses:[/127.0.0.1]], state=Idle, lastBusy=1768668785670, context=DefaultDaemonContext[uid=c8533500-ca0a-43ec-8cb7-1dfa6f8187c4,javaHome=C:\Program Files\Java\jdk-24,javaVersion=24,javaVendor=Oracle Corporation,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=37940,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=c8533500-ca0a-43ec-8cb7-1dfa6f8187c4,javaHome=C:\Program Files\Java\jdk-24,javaVersion=24,javaVendor=Oracle Corporation,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=37940,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=43676, address=[d10c8f2c-495a-4df8-81e1-bbb90f96bed1 port:54137, addresses:[/127.0.0.1]], state=Idle, lastBusy=1768668909931, context=DefaultDaemonContext[uid=f5282ef1-b326-4acf-9671-e24f40cf288f,javaHome=C:\Users\Public\wpilib\2025\jdk,javaVersion=17,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=43676,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=f5282ef1-b326-4acf-9671-e24f40cf288f,javaHome=C:\Users\Public\wpilib\2025\jdk,javaVersion=17,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=43676,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=6800, address=[a7609b4b-c1e2-4d54-9585-8e1648979549 port:52715, addresses:[/127.0.0.1]], state=Idle, lastBusy=1768669037406, context=DefaultDaemonContext[uid=0dbc7107-4ac5-493d-82a7-d542e79bf142,javaHome=C:\Program Files\Java\jdk-24,javaVersion=24,javaVendor=Oracle Corporation,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=6800,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=0dbc7107-4ac5-493d-82a7-d542e79bf142,javaHome=C:\Program Files\Java\jdk-24,javaVersion=24,javaVendor=Oracle Corporation,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=6800,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=18988, address=[ee0067fa-db5d-4cd2-a619-cfdd94181210 port:52742, addresses:[/127.0.0.1]], state=Idle, lastBusy=1768669230278, context=DefaultDaemonContext[uid=95294404-6da3-4252-8d52-6d5c3b542436,javaHome=C:\Users\Aiden\.vscode\extensions\redhat.java-1.51.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=18988,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=95294404-6da3-4252-8d52-6d5c3b542436,javaHome=C:\Users\Aiden\.vscode\extensions\redhat.java-1.51.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=18988,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=31372, address=[57244f46-1981-4d16-859c-ac0e49451af6 port:52767, addresses:[/127.0.0.1]], state=Idle, lastBusy=1768668990115, context=DefaultDaemonContext[uid=a3e0ee21-e17f-4506-9d4c-9b0b39849f75,javaHome=C:\Users\Aiden\.vscode\extensions\redhat.java-1.51.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=31372,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=a3e0ee21-e17f-4506-9d4c-9b0b39849f75,javaHome=C:\Users\Aiden\.vscode\extensions\redhat.java-1.51.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=31372,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=27956, address=[67f4db6f-eebe-44bb-b578-025e27c0ecf8 port:58088, addresses:[/127.0.0.1]], state=Idle, lastBusy=1769123781896, context=DefaultDaemonContext[uid=4775c275-cec5-4c40-9ac6-3270192d3beb,javaHome=C:\Users\Public\wpilib\2026\vscode\data\extensions\redhat.java-1.51.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=27956,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=4775c275-cec5-4c40-9ac6-3270192d3beb,javaHome=C:\Users\Public\wpilib\2026\vscode\data\extensions\redhat.java-1.51.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=27956,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=33584, address=[0d2fda80-26d1-48d4-9b9a-04471557d588 port:58092, addresses:[/127.0.0.1]], state=Idle, lastBusy=1769123782647, context=DefaultDaemonContext[uid=a329dbe6-f387-4c87-8155-30380f0bf255,javaHome=C:\Users\Public\wpilib\2026\vscode\data\extensions\redhat.java-1.51.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=33584,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Users\Public\wpilib\2026\jdk (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=a329dbe6-f387-4c87-8155-30380f0bf255,javaHome=C:\Users\Public\wpilib\2026\vscode\data\extensions\redhat.java-1.51.0-win32-x64\jre\21.0.9-win32-x86_64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=C:\Users\Aiden\.gradle\daemon,pid=33584,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+The client will now receive all logging from the daemon (pid: 36380). The daemon log file: C:\Users\Aiden\.gradle\daemon\8.11\daemon-36380.out.log
+Starting 10th build in daemon [uptime: 29 mins 23.378 secs, performance: 100%, GC rate: 0.00/s, heap usage: 0% of 512 MiB, non-heap usage: 20% of 384 MiB]
+Using 24 worker leases.
+Now considering [C:\GitHub\2026-Reefscape-lidar] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Settings evaluated using settings file 'C:\GitHub\2026-Reefscape-lidar\settings.gradle'.
+Projects loaded. Root project using build file 'C:\GitHub\2026-Reefscape-lidar\build.gradle'.
+Included projects: [root project '2026-Reefscape-lidar']
+
+> Configure project :
+Evaluating root project '2026-Reefscape-lidar' using build file 'C:\GitHub\2026-Reefscape-lidar\build.gradle'.
+Transforming GradleRIO-2026.2.1.jar (edu.wpi.first:GradleRIO:2026.2.1) with InstrumentationAnalysisTransform
+Transforming native-utils-2026.0.1.jar (edu.wpi.first:native-utils:2026.0.1) with InstrumentationAnalysisTransform
+Transforming gradle-cpp-vscode-2.1.0.jar (edu.wpi.first:gradle-cpp-vscode:2.1.0) with InstrumentationAnalysisTransform
+Transforming ToolchainPlugin-2026.0.1.jar (edu.wpi.first:ToolchainPlugin:2026.0.1) with InstrumentationAnalysisTransform
+Transforming DeployUtils-2025.2.0.jar (edu.wpi.first:DeployUtils:2025.2.0) with InstrumentationAnalysisTransform
+Transforming gson-2.13.1.jar (com.google.code.gson:gson:2.13.1) with InstrumentationAnalysisTransform
+Transforming gradle-download-task-5.6.0.jar (de.undercouch:gradle-download-task:5.6.0) with InstrumentationAnalysisTransform
+Transforming error_prone_annotations-2.38.0.jar (com.google.errorprone:error_prone_annotations:2.38.0) with InstrumentationAnalysisTransform
+Transforming grgit-core-5.0.0.jar (org.ajoberstar.grgit:grgit-core:5.0.0) with InstrumentationAnalysisTransform
+Transforming groovy-3.0.9.jar (org.codehaus.groovy:groovy:3.0.9) with InstrumentationAnalysisTransform
+Transforming org.eclipse.jgit-6.0.0.202111291000-r.jar (org.eclipse.jgit:org.eclipse.jgit:6.0.0.202111291000-r) with InstrumentationAnalysisTransform
+Transforming JavaEWAH-1.1.13.jar (com.googlecode.javaewah:JavaEWAH:1.1.13) with InstrumentationAnalysisTransform
+Transforming sshd-sftp-2.13.2.jar (org.apache.sshd:sshd-sftp:2.13.2) with InstrumentationAnalysisTransform
+Transforming sshd-core-2.13.2.jar (org.apache.sshd:sshd-core:2.13.2) with InstrumentationAnalysisTransform
+Transforming sshd-common-2.13.2.jar (org.apache.sshd:sshd-common:2.13.2) with InstrumentationAnalysisTransform
+Transforming jcl-over-slf4j-1.7.32.jar (org.slf4j:jcl-over-slf4j:1.7.32) with InstrumentationAnalysisTransform
+Transforming slf4j-api-1.7.32.jar (org.slf4j:slf4j-api:1.7.32) with InstrumentationAnalysisTransform
+Transforming eddsa-0.3.0.jar (net.i2p.crypto:eddsa:0.3.0) with InstrumentationAnalysisTransform
+Transforming jsch-0.1.55.jar (com.jcraft:jsch:0.1.55) with InstrumentationAnalysisTransform
+Transforming GradleRIO-2026.2.1.jar (edu.wpi.first:GradleRIO:2026.2.1) with InstrumentationAnalysisTransform
+Transforming GradleRIO-2026.2.1.jar (edu.wpi.first:GradleRIO:2026.2.1) with MergeInstrumentationAnalysisTransform
+Transforming native-utils-2026.0.1.jar (edu.wpi.first:native-utils:2026.0.1) with InstrumentationAnalysisTransform
+Transforming native-utils-2026.0.1.jar (edu.wpi.first:native-utils:2026.0.1) with MergeInstrumentationAnalysisTransform
+Transforming gradle-cpp-vscode-2.1.0.jar (edu.wpi.first:gradle-cpp-vscode:2.1.0) with InstrumentationAnalysisTransform
+Transforming gradle-cpp-vscode-2.1.0.jar (edu.wpi.first:gradle-cpp-vscode:2.1.0) with MergeInstrumentationAnalysisTransform
+Transforming ToolchainPlugin-2026.0.1.jar (edu.wpi.first:ToolchainPlugin:2026.0.1) with InstrumentationAnalysisTransform
+Transforming GradleRIO-2026.2.1.jar (edu.wpi.first:GradleRIO:2026.2.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming ToolchainPlugin-2026.0.1.jar (edu.wpi.first:ToolchainPlugin:2026.0.1) with MergeInstrumentationAnalysisTransform
+Transforming native-utils-2026.0.1.jar (edu.wpi.first:native-utils:2026.0.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming DeployUtils-2025.2.0.jar (edu.wpi.first:DeployUtils:2025.2.0) with InstrumentationAnalysisTransform
+Transforming DeployUtils-2025.2.0.jar (edu.wpi.first:DeployUtils:2025.2.0) with MergeInstrumentationAnalysisTransform
+Transforming gson-2.13.1.jar (com.google.code.gson:gson:2.13.1) with InstrumentationAnalysisTransform
+Transforming gradle-cpp-vscode-2.1.0.jar (edu.wpi.first:gradle-cpp-vscode:2.1.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming gson-2.13.1.jar (com.google.code.gson:gson:2.13.1) with MergeInstrumentationAnalysisTransform
+Transforming ToolchainPlugin-2026.0.1.jar (edu.wpi.first:ToolchainPlugin:2026.0.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming DeployUtils-2025.2.0.jar (edu.wpi.first:DeployUtils:2025.2.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming gradle-download-task-5.6.0.jar (de.undercouch:gradle-download-task:5.6.0) with InstrumentationAnalysisTransform
+Transforming gradle-download-task-5.6.0.jar (de.undercouch:gradle-download-task:5.6.0) with MergeInstrumentationAnalysisTransform
+Transforming gson-2.13.1.jar (com.google.code.gson:gson:2.13.1) with ExternalDependencyInstrumentingArtifactTransform
+Transforming error_prone_annotations-2.38.0.jar (com.google.errorprone:error_prone_annotations:2.38.0) with InstrumentationAnalysisTransform
+Transforming error_prone_annotations-2.38.0.jar (com.google.errorprone:error_prone_annotations:2.38.0) with MergeInstrumentationAnalysisTransform
+Transforming gradle-download-task-5.6.0.jar (de.undercouch:gradle-download-task:5.6.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming grgit-core-5.0.0.jar (org.ajoberstar.grgit:grgit-core:5.0.0) with InstrumentationAnalysisTransform
+Transforming grgit-core-5.0.0.jar (org.ajoberstar.grgit:grgit-core:5.0.0) with MergeInstrumentationAnalysisTransform
+Transforming error_prone_annotations-2.38.0.jar (com.google.errorprone:error_prone_annotations:2.38.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming groovy-3.0.9.jar (org.codehaus.groovy:groovy:3.0.9) with InstrumentationAnalysisTransform
+Transforming groovy-3.0.9.jar (org.codehaus.groovy:groovy:3.0.9) with MergeInstrumentationAnalysisTransform
+Transforming grgit-core-5.0.0.jar (org.ajoberstar.grgit:grgit-core:5.0.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming org.eclipse.jgit-6.0.0.202111291000-r.jar (org.eclipse.jgit:org.eclipse.jgit:6.0.0.202111291000-r) with InstrumentationAnalysisTransform
+Transforming org.eclipse.jgit-6.0.0.202111291000-r.jar (org.eclipse.jgit:org.eclipse.jgit:6.0.0.202111291000-r) with MergeInstrumentationAnalysisTransform
+Transforming groovy-3.0.9.jar (org.codehaus.groovy:groovy:3.0.9) with ExternalDependencyInstrumentingArtifactTransform
+Transforming JavaEWAH-1.1.13.jar (com.googlecode.javaewah:JavaEWAH:1.1.13) with InstrumentationAnalysisTransform
+Transforming JavaEWAH-1.1.13.jar (com.googlecode.javaewah:JavaEWAH:1.1.13) with MergeInstrumentationAnalysisTransform
+Transforming org.eclipse.jgit-6.0.0.202111291000-r.jar (org.eclipse.jgit:org.eclipse.jgit:6.0.0.202111291000-r) with ExternalDependencyInstrumentingArtifactTransform
+Transforming sshd-sftp-2.13.2.jar (org.apache.sshd:sshd-sftp:2.13.2) with InstrumentationAnalysisTransform
+Transforming sshd-sftp-2.13.2.jar (org.apache.sshd:sshd-sftp:2.13.2) with MergeInstrumentationAnalysisTransform
+Transforming JavaEWAH-1.1.13.jar (com.googlecode.javaewah:JavaEWAH:1.1.13) with ExternalDependencyInstrumentingArtifactTransform
+Transforming sshd-core-2.13.2.jar (org.apache.sshd:sshd-core:2.13.2) with InstrumentationAnalysisTransform
+Transforming sshd-core-2.13.2.jar (org.apache.sshd:sshd-core:2.13.2) with MergeInstrumentationAnalysisTransform
+Transforming sshd-sftp-2.13.2.jar (org.apache.sshd:sshd-sftp:2.13.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming sshd-common-2.13.2.jar (org.apache.sshd:sshd-common:2.13.2) with InstrumentationAnalysisTransform
+Transforming sshd-common-2.13.2.jar (org.apache.sshd:sshd-common:2.13.2) with MergeInstrumentationAnalysisTransform
+Transforming sshd-core-2.13.2.jar (org.apache.sshd:sshd-core:2.13.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jcl-over-slf4j-1.7.32.jar (org.slf4j:jcl-over-slf4j:1.7.32) with InstrumentationAnalysisTransform
+Transforming jcl-over-slf4j-1.7.32.jar (org.slf4j:jcl-over-slf4j:1.7.32) with MergeInstrumentationAnalysisTransform
+Transforming sshd-common-2.13.2.jar (org.apache.sshd:sshd-common:2.13.2) with ExternalDependencyInstrumentingArtifactTransform
+Transforming slf4j-api-1.7.32.jar (org.slf4j:slf4j-api:1.7.32) with InstrumentationAnalysisTransform
+Transforming slf4j-api-1.7.32.jar (org.slf4j:slf4j-api:1.7.32) with MergeInstrumentationAnalysisTransform
+Transforming eddsa-0.3.0.jar (net.i2p.crypto:eddsa:0.3.0) with InstrumentationAnalysisTransform
+Transforming eddsa-0.3.0.jar (net.i2p.crypto:eddsa:0.3.0) with MergeInstrumentationAnalysisTransform
+Transforming jcl-over-slf4j-1.7.32.jar (org.slf4j:jcl-over-slf4j:1.7.32) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jsch-0.1.55.jar (com.jcraft:jsch:0.1.55) with InstrumentationAnalysisTransform
+Transforming slf4j-api-1.7.32.jar (org.slf4j:slf4j-api:1.7.32) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jsch-0.1.55.jar (com.jcraft:jsch:0.1.55) with MergeInstrumentationAnalysisTransform
+Transforming eddsa-0.3.0.jar (net.i2p.crypto:eddsa:0.3.0) with ExternalDependencyInstrumentingArtifactTransform
+Transforming jsch-0.1.55.jar (com.jcraft:jsch:0.1.55) with ExternalDependencyInstrumentingArtifactTransform
+Registering vendor dep maven: d820cc26-74e3-11ec-90d6-0242ac120003_0 on project :
+Registering vendor dep maven: 8ef3423d-9532-4665-8339-206dae1d7168_0 on project :
+Registering vendor dep maven: 1b42324f-17c6-4875-8e77-1c312bc8c786_0 on project :
+Registering vendor dep maven: e995de00-2c64-4df5-8831-c1441420ff19_0 on project :
+Registering vendor dep maven: 3f48eb8c-50fe-43a6-9cb7-44c86353c4cb_0 on project :
+All projects evaluated.
+Task name matched 'test'
+Selected primary task 'test' from project :
+Transforming hal-cpp-2026.2.1-windowsx86-64.zip (edu.wpi.first.hal:hal-cpp:2026.2.1) with UnzipTransform
+Transforming wpinet-cpp-2026.2.1-windowsx86-64.zip (edu.wpi.first.wpinet:wpinet-cpp:2026.2.1) with UnzipTransform
+Transforming wpimath-cpp-2026.2.1-windowsx86-64.zip (edu.wpi.first.wpimath:wpimath-cpp:2026.2.1) with UnzipTransform
+Transforming opencv-cpp-4.10.0-3-windowsx86-64.zip (edu.wpi.first.thirdparty.frc2025.opencv:opencv-cpp:4.10.0-3) with UnzipTransform
+Transforming apriltag-cpp-2026.2.1-windowsx86-64.zip (edu.wpi.first.apriltag:apriltag-cpp:2026.2.1) with UnzipTransform
+Transforming ntcore-cpp-2026.2.1-windowsx86-64.zip (edu.wpi.first.ntcore:ntcore-cpp:2026.2.1) with UnzipTransform
+Transforming wpiutil-cpp-2026.2.1-windowsx86-64.zip (edu.wpi.first.wpiutil:wpiutil-cpp:2026.2.1) with UnzipTransform
+Transforming REVLib-driver-2026.0.1-windowsx86-64.zip (com.revrobotics.frc:REVLib-driver:2026.0.1) with UnzipTransform
+Transforming cscore-cpp-2026.2.1-windowsx86-64.zip (edu.wpi.first.cscore:cscore-cpp:2026.2.1) with UnzipTransform
+Transforming RevLibBackendDriver-2026.0.1-windowsx86-64.zip (com.revrobotics.frc:RevLibBackendDriver:2026.0.1) with UnzipTransform
+Transforming RevLibWpiBackendDriver-2026.0.1-windowsx86-64.zip (com.revrobotics.frc:RevLibWpiBackendDriver:2026.0.1) with UnzipTransform
+Transforming libgrapplefrcdriver-2026.0.0-windowsx86-64.zip (au.grapplerobotics:libgrapplefrcdriver:2026.0.0) with UnzipTransform
+Transforming akit-wpilibio-26.0.0-windowsx86-64.zip (org.littletonrobotics.akit:akit-wpilibio:26.0.0) with UnzipTransform
+Transforming api-cpp-sim-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:api-cpp-sim:26.1.0) with UnzipTransform
+Transforming tools-sim-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:tools-sim:26.1.0) with UnzipTransform
+Transforming simTalonSRX-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simTalonSRX:26.1.0) with UnzipTransform
+Transforming simVictorSPX-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simVictorSPX:26.1.0) with UnzipTransform
+Transforming simPigeonIMU-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simPigeonIMU:26.1.0) with UnzipTransform
+Transforming simProTalonFX-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simProTalonFX:26.1.0) with UnzipTransform
+Transforming simProTalonFXS-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simProTalonFXS:26.1.0) with UnzipTransform
+Transforming simProPigeon2-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simProPigeon2:26.1.0) with UnzipTransform
+Transforming simProCANcoder-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simProCANcoder:26.1.0) with UnzipTransform
+Transforming simProCANrange-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simProCANrange:26.1.0) with UnzipTransform
+Transforming simProCANdi-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simProCANdi:26.1.0) with UnzipTransform
+Transforming simProCANdle-26.1.0-windowsx86-64.zip (com.ctre.phoenix6.sim:simProCANdle:26.1.0) with UnzipTransform
+Transforming halsim_gui-2026.2.1-windowsx86-64.zip (edu.wpi.first.halsim:halsim_gui:2026.2.1) with UnzipTransform
+Transforming halsim_ds_socket-2026.2.1-windowsx86-64.zip (edu.wpi.first.halsim:halsim_ds_socket:2026.2.1) with UnzipTransform
+Tasks to be executed: [task ':compileJava', task ':processResources', task ':classes', task ':compileTestJava', task ':extractReleaseNative', task ':processTestResources', task ':testClasses', task ':test']
+Tasks that were excluded: []
+Running wrapper inspector on project :
+Found gradle-wrapper.properties on :
+Resolve mutations for :compileJava (Thread[Execution worker,5,main]) started.
+:compileJava (Thread[Execution worker Thread 20,5,main]) started.
+
+> Task :compileJava
+Caching disabled for task ':compileJava' because:
+  Build cache is disabled
+Task ':compileJava' is not up-to-date because:
+  Executed with '--rerun-tasks'.
+The input changes require a full rebuild for incremental task ':compileJava'.
+Compilation mode: in-process compilation
+Full recompilation is required because no incremental change information is available. This is usually caused by clean builds or changing compiler arguments.
+Compiling with toolchain 'C:\Users\Public\wpilib\2026\jdk'.
+Compiling with JDK Java compiler API.
+Class dependency analysis for incremental compilation took 0.278 secs.
+Created classpath snapshot for incremental compilation in 0.009 secs.
+Resolve mutations for :processResources (Thread[Execution worker Thread 20,5,main]) started.
+:processResources (Thread[Execution worker Thread 20,5,main]) started.
+
+> Task :processResources NO-SOURCE
+Skipping task ':processResources' as it has no source files and no previous output files.
+Resolve mutations for :classes (Thread[Execution worker Thread 20,5,main]) started.
+:classes (Thread[Execution worker Thread 8,5,main]) started.
+
+> Task :classes
+Skipping task ':classes' as it has no actions.
+Resolve mutations for :compileTestJava (Thread[Execution worker Thread 8,5,main]) started.
+:compileTestJava (Thread[Execution worker Thread 8,5,main]) started.
+
+> Task :compileTestJava
+Caching disabled for task ':compileTestJava' because:
+  Build cache is disabled
+Task ':compileTestJava' is not up-to-date because:
+  Executed with '--rerun-tasks'.
+The input changes require a full rebuild for incremental task ':compileTestJava'.
+Compilation mode: in-process compilation
+Full recompilation is required because no incremental change information is available. This is usually caused by clean builds or changing compiler arguments.
+Compiling with toolchain 'C:\Users\Public\wpilib\2026\jdk'.
+Compiling with JDK Java compiler API.
+Class dependency analysis for incremental compilation took 0.007 secs.
+Created classpath snapshot for incremental compilation in 0.007 secs.
+Resolve mutations for :extractReleaseNative (Thread[Execution worker Thread 8,5,main]) started.
+:extractReleaseNative (Thread[Execution worker Thread 8,5,main]) started.
+Resolve mutations for :processTestResources (Thread[Execution worker Thread 5,5,main]) started.
+:processTestResources (Thread[Execution worker Thread 5,5,main]) started.
+
+> Task :processTestResources NO-SOURCE
+Skipping task ':processTestResources' as it has no source files and no previous output files.
+Resolve mutations for :testClasses (Thread[Execution worker Thread 5,5,main]) started.
+:testClasses (Thread[Execution worker Thread 5,5,main]) started.
+
+> Task :testClasses
+Skipping task ':testClasses' as it has no actions.
+
+> Task :extractReleaseNative
+Caching disabled for task ':extractReleaseNative' because:
+  Build cache is disabled
+  Caching has not been enabled for the task
+Task ':extractReleaseNative' is not up-to-date because:
+  Executed with '--rerun-tasks'.
+Resolve mutations for :test (Thread[Execution worker Thread 8,5,main]) started.
+:test (Thread[Execution worker Thread 8,5,main]) started.
+Gradle Test Executor 6 started executing tests.
+
+> Task :test
+Custom actions are attached to task ':test'.
+Caching disabled for task ':test' because:
+  Build cache is disabled
+Task ':test' is not up-to-date because:
+  Executed with '--rerun-tasks'.
+Starting process 'Gradle Test Executor 6'. Working directory: C:\GitHub\2026-Reefscape-lidar Command: C:\Users\Public\wpilib\2026\jdk\bin\java.exe -Djava.library.path=C:\GitHub\2026-Reefscape-lidar\build\jni\release -Djunit.jupiter.extensions.autodetection.enabled=true -Dorg.gradle.internal.worker.tmpdir=C:\GitHub\2026-Reefscape-lidar\build\tmp\test\work @C:\Users\Aiden\.gradle\.tmp\gradle-worker-classpath3133537296666584614txt -Xmx512m -Dfile.encoding=windows-1252 -Duser.country=US -Duser.language=en -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 6'
+Successfully started process 'Gradle Test Executor 6'
+
+EstimatedClimbingAccTest > testEstimatedClimbingAcc() STANDARD_OUT
+    Starting EstimatedClimbingAccTest...
+    EstimatedClimbingAccTest complete. Average Climbing Improvement when seeing something: 0.018708141809067533 meters over 20000 iterations out of 20000 total.
+    Average Starting Innacuracy when seeing something: 0.023054447182981618 meters over 20000 iterations out of 20000 total.
+    Final Accuracy Mean: 0.004346305373913922 meters
+    Final Accuracy Std Dev: 0.005470463897091976 meters
+
+Gradle Test Executor 6 finished executing tests.
+
+> Task :test
+Finished generating test XML results (0.021 secs) into: C:\GitHub\2026-Reefscape-lidar\build\test-results\test
+Generating HTML test report...
+Finished generating test html results (0.003 secs) into: C:\GitHub\2026-Reefscape-lidar\build\reports\tests\test
+[Incubating] Problems report is available at: file:///C:/GitHub/2026-Reefscape-lidar/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 27s
+4 actionable tasks: 4 executed
+Watched directory hierarchies: [C:\GitHub\2026-Reefscape-lidar]
+Terminate batch job (Y/N)? Terminate batch job (Y/N)? Terminate batch job (Y/N)? Terminate batch job (Y/N)? Terminate batch job (Y/N)? Terminate batch job (Y/N)? Terminate batch job (Y/N)? Terminate batch job (Y/N)? 
+Terminate batch job (Y/N)? Terminate batch job (Y/N)? 
