@@ -36,9 +36,10 @@ import frc.robot.commands.defaultCommands.CoralDispenserCommand;
 
 import frc.robot.commands.defaultCommands.ElevatorCommand;
 import frc.robot.commands.defaultCommands.SwerveJoystickCmd;
-
+import frc.robot.extras.YDLidarGS2;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.LidarSubsystem;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.CoralCollectionSubsystem;
@@ -78,6 +79,7 @@ public class RobotContainer {
   ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   CoralDispenserSubsystem coralDispenserSubsystem = new CoralDispenserSubsystem();
   LEDSubsystem ledSubsystem = new LEDSubsystem();
+  LidarSubsystem lidarSubsystem = new LidarSubsystem();
 
   // Make sure this xbox controller is correct and add driver sticks
   CommandXboxController xboxController = new CommandXboxController(OperatorConstants.kXboxControllerPort);
