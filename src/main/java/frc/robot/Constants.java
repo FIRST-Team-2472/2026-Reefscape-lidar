@@ -250,7 +250,7 @@ public final class Constants {
         public static LinearVelocity kRainbowScrollSpeed = MetersPerSecond.of(3);
     }   
     public final class LidarConstants{
-        public static double kLidarHorizontalOffsetFromCenterMeters = 0.1; // 10 cm horizontal from center
+        public static double kLidarHorizontalOffsetFromCenterMeters = 0.1016; // 10 cm horizontal from center
         public static double kLidarAngleOffsetFromForwardDegrees = 45; // each lidar looks inwards at 45 degrees
     }
 }
