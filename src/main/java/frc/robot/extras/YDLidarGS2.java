@@ -25,8 +25,9 @@ public class YDLidarGS2 {
     private static final double ANGLE_PANGLE = 22.5;
 
     // Buffer for reading
-    private final byte[] buffer = new byte[1024];
+    private final byte[] buffer = new byte[4096];
     private int bufferIdx = 0;
+    private int debugPacketCount = 0;
 
     public static class LidarPoint {
         public double angle; // degrees
@@ -37,16 +38,22 @@ public class YDLidarGS2 {
     public YDLidarGS2(SerialPort.Port port) {
         this.baudRate = 921600; // GS2 Default
         this.serial = new SerialPort(baudRate, port);
-        this.serial.setReadBufferSize(2048);
+        this.serial.setReadBufferSize(4096);
         this.serial.setTimeout(0.01);
     }
 
     public boolean initialize() {
-        stopScanning();
-        Timer.delay(0.1);
+        // Aggressively attempt to stop scanning to ensure a quiet bus
+        // If the lidar is streaming data, we might miss the command response or buffer fills up
+        for (int i = 0; i < 3; i++) {
+            sendCommand(0x00, CMD_STOP_SCAN, new byte[0]);
+            Timer.delay(0.05);
+        }
         
-        // flush
+        // flush buffer completely
         readAllBytes();
+        Timer.delay(0.1);
+        readAllBytes(); // Flush again after a short delay
         
         // 1. Get Parameters (Calibration)
         if (!fetchParameters()) {
@@ -83,8 +90,16 @@ public class YDLidarGS2 {
         // Look for header
         int headerIdx = findHeader();
         if (headerIdx == -1) {
-            // No header found, keep last few bytes in case header is split, discard rest
-            compactBuffer(bufferIdx > 3 ? bufferIdx - 3 : 0);
+            // No header found logic
+            if (bufferIdx > 128) {
+                // Buffer filling up but no header? Just dump it to find sync.
+                // Print first few bytes to debug protocol
+                if (debugPacketCount++ % 50 == 0) {
+                     System.out.println(String.format("GS2 Debug: Buffer fill %d, Header not found. [0]=%02X [1]=%02X", 
+                        bufferIdx, buffer[0], buffer[1]));
+                }
+                compactBuffer(bufferIdx - 3); 
+            }
             return null;
         }
 
@@ -122,8 +137,12 @@ public class YDLidarGS2 {
         byte packetType = buffer[headerIdx + 5];
         LidarPoint[] points = null;
 
-        if (packetType == (byte)0x81 || packetType == (byte)0x01) { // Measurement Packet
+        if (packetType == (byte)0x81 || packetType == (byte)0x01 || packetType == CMD_START_SCAN) { // Measurement Packet
             points = parseMeasurement(buffer, headerIdx + 8, dataLen);
+        } else {
+             if (debugPacketCount++ % 50 == 0) {
+                 System.out.println(String.format("GS2 Unknown Packet Type: 0x%02X len: %d", packetType, dataLen));
+             }
         }
 
         // Done with this packet

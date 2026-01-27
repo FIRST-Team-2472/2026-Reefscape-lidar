@@ -7,27 +7,61 @@ import frc.robot.extras.YDLidarGS2;
 import frc.robot.extras.YDLidarGS2.LidarPoint;
 
 public class LidarSubsystem extends SubsystemBase {
-    private final YDLidarGS2 lidar;
+    private YDLidarGS2 leftLidar;
+    private YDLidarGS2 rightLidar;
 
     // Change this to kMXP if wired to the expansion port
-    private static final SerialPort.Port kLidarPort = SerialPort.Port.kUSB;
+    private static final SerialPort.Port kLidar1Port = SerialPort.Port.kUSB1;
+    private static final SerialPort.Port kLidar2Port = SerialPort.Port.kUSB2;
 
     public LidarSubsystem() {
-        lidar = new YDLidarGS2(kLidarPort);
-        
-        // Run setup in a separate thread so it doesn't block robot init
-        new Thread(() -> {
-            try {
-                if (lidar.initialize()) {
-                    lidar.startScanning();
-                    SmartDashboard.putBoolean("Lidar/Connected", true);
-                } else {
-                    SmartDashboard.putBoolean("Lidar/Connected", false);
+        startLidarInit("Left", kLidar1Port);
+        startLidarInit("Right", kLidar2Port);
+    }
+
+    private void startLidarInit(String name, SerialPort.Port port) {
+         new Thread(() -> {
+            int retryCount = 0;
+            YDLidarGS2 lidar = null;
+
+            // Give the roboRIO some time to boot and enumerate USB devices
+            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+
+            while (retryCount < 20 && lidar == null) {
+                try {
+                    lidar = new YDLidarGS2(port);
+                } catch (Exception e) {
+                    SmartDashboard.putString("Lidar/" + name + "/Status", "Port Error (Entry " + retryCount + "): " + e.getMessage());
+                    // Wait before retrying
+                    try { Thread.sleep(1000); } catch (InterruptedException ie) {}
                 }
-            } catch (Exception e) {
-                SmartDashboard.putBoolean("Lidar/Connected", false);
-                SmartDashboard.putString("Lidar/Error", e.getMessage());
-                System.err.println("Failed to start Lidar: " + e.getMessage());
+                retryCount++;
+            }
+
+            if (lidar == null) {
+                SmartDashboard.putString("Lidar/" + name + "/Status", "Gave up opening port after attempts.");
+                return;
+            }
+
+            // Now try to initialize the sensor protocol
+            retryCount = 0;
+            boolean initialized = false;
+            while(retryCount < 20 && !initialized) {
+                 if (lidar.initialize()) {
+                     initialized = true;
+                     lidar.startScanning();
+                     
+                     // Assign to the class field safely
+                     if (name.equals("Left")) this.leftLidar = lidar;
+                     else this.rightLidar = lidar;
+
+                     SmartDashboard.putBoolean("Lidar/" + name + "/Connected", true);
+                     SmartDashboard.putString("Lidar/" + name + "/Status", "Running");
+                 } else {
+                     SmartDashboard.putString("Lidar/" + name + "/Status", "Proto Init Failed (Attempt " + retryCount + ")");
+                     try { Thread.sleep(500); } catch (InterruptedException ie) {}
+                 }
+                 retryCount++;
             }
         }).start();
     }
@@ -35,33 +69,36 @@ public class LidarSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Get the latest complete scan if available
-        LidarPoint[] points = lidar.getLatestScan();
+        if (leftLidar != null) {
+            LidarPoint[] leftLidarPoints = leftLidar.getLatestScan();
 
-        if (points != null) {
-            // Log diagnostics to SmartDashboard
-            SmartDashboard.putNumber("Lidar/PointCount", points.length);
-
-            if (points.length > 0) {
-                // Log sample data from the center point
-                LidarPoint sample = points[points.length / 2];
-                SmartDashboard.putNumber("Lidar/Sample/Dist_mm", sample.distance);
-                SmartDashboard.putNumber("Lidar/Sample/Angle_deg", sample.angle);
-                
-                // Calculate Cartesian coordinates for visualization
-                double rads = Math.toRadians(sample.angle);
-                double x = sample.distance * Math.cos(rads);
-                double y = sample.distance * Math.sin(rads);
-
-                SmartDashboard.putNumber("Lidar/Sample/X", x);
-                SmartDashboard.putNumber("Lidar/Sample/Y", y);
-                
-                // Optional: Calculate and log average distance as a rough sanity check
-                double totalDist = 0;
-                for (LidarPoint p : points) {
-                    totalDist += p.distance;
+            if (leftLidarPoints != null) {
+                // Log diagnostics to SmartDashboard
+                SmartDashboard.putNumber("Lidar/Left/PointCount", leftLidarPoints.length);
+                if (leftLidarPoints.length > 0) {
+                    double sumDistances = 0;
+                    for (LidarPoint p : leftLidarPoints) {
+                        sumDistances += p.distance;
+                    }
+                    double avgDistance = sumDistances / leftLidarPoints.length;
+                    SmartDashboard.putNumber("Lidar/Left/AvgDistanceMeters", avgDistance);
                 }
-                SmartDashboard.putNumber("Lidar/AvgDist_mm", totalDist / points.length);
             }
+        }
+        
+        if (rightLidar != null) {
+            LidarPoint[] rightLidarPoints = rightLidar.getLatestScan();
+             if (rightLidarPoints != null) {
+                SmartDashboard.putNumber("Lidar/Right/PointCount", rightLidarPoints.length);
+                if (rightLidarPoints.length > 0) {
+                    double sumDistances = 0;
+                    for (LidarPoint p : rightLidarPoints) {
+                        sumDistances += p.distance;
+                    }
+                    double avgDistance = sumDistances / rightLidarPoints.length;
+                    SmartDashboard.putNumber("Lidar/Right/AvgDistanceMeters", avgDistance);
+                }
+             }
         }
     }
     
@@ -70,6 +107,7 @@ public class LidarSubsystem extends SubsystemBase {
      * (though usually simpler to just leave it running).
      */
     public void stopLidar() {
-        lidar.stopScanning();
+        if (leftLidar != null) leftLidar.stopScanning();
+        if (rightLidar != null) rightLidar.stopScanning();
     }
 }

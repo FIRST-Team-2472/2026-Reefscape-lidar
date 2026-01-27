@@ -190,7 +190,6 @@ public class RobotContainer {
         return true;
       }
     };
-    SmartDashboard.putData("Zero Gyro", zeroGyro);
     SmartDashboard.putData("Test Accuracy", testAccuracy);
 
   }
